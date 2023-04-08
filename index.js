@@ -1,6 +1,6 @@
 const functions = require('@google-cloud/functions-framework');
 const { Configuration, OpenAIApi } = require("openai");
-const {verifyRequestSignature} = require('@slack/events-api');
+const { verifyRequestSignature } = require('@slack/events-api');
 
 const configuration = new Configuration({
 	apiKey: process.env.CHAT_GPT_API_TOKEN,
@@ -17,8 +17,9 @@ const postMessage = async (payload) => {
 		result = await openai.createChatCompletion({
 			model: "gpt-3.5-turbo",
 			//model: "gpt-4",
-			messages: [{ role: "user", content: `your own text ${payload.event.text}
-` }],
+			messages: [{
+				role: "user", content: `your own text ${payload.event.text}`
+			}],
 		});
 	} catch (error) {
 		console.log(error)
@@ -27,12 +28,13 @@ const postMessage = async (payload) => {
 
 
 	const bodyj = {
-		channel:payload.event.channel,
+		channel: payload.event.channel,
 		text: result.data.choices[0].message.content
 	}
 	const res = await fetch('https://slack.com/api/chat.postMessage', {
 		method: 'post',
-		headers: { 'Authorization': `Bearer ${process.env.SLACK_BOT_TOKEN}`,
+		headers: {
+			'Authorization': `Bearer ${process.env.SLACK_BOT_TOKEN}`,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(bodyj),
